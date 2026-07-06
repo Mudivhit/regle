@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/label";
 import { AvatarUpload } from "@/components/avatar-upload";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
-
-const profileSchema = z.object({
-  full_name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
-});
+import { profileSchema } from "@/lib/validations/profile";
 
 interface ProfileFormProps {
   initialProfile: {

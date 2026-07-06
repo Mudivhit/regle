@@ -30,13 +30,13 @@ export default function ProfilePage() {
     <div className="flex-1 w-full flex flex-col gap-8 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-        <p className="text-muted-foreground mt-2">Manage your public profile information.</p>
+        <p className="text-muted-foreground mt-2">Manage your private profile information.</p>
       </div>
       
       <Card className="glass border-white/10 dark:border-white/[0.06]">
         <CardHeader>
           <CardTitle>Profile Details</CardTitle>
-          <CardDescription>This information will be displayed publicly.</CardDescription>
+          <CardDescription>This information is kept private.</CardDescription>
         </CardHeader>
         <CardContent>
           <Suspense fallback={<div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>

@@ -24,19 +24,23 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
         throw new Error("You must select an image to upload.");
       }
 
+      const file = event.target.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error("Avatar must be less than 2MB");
+      }
+
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData?.user) {
         throw new Error("You must be logged in to upload an avatar.");
       }
       const userId = userData.user.id;
 
-      const file = event.target.files[0];
       const fileExt = file.name.split(".").pop();
-      const filePath = `${userId}/${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${userId}/avatar.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) {
         throw uploadError;
