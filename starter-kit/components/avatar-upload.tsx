@@ -24,9 +24,15 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
         throw new Error("You must select an image to upload.");
       }
 
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData?.user) {
+        throw new Error("You must be logged in to upload an avatar.");
+      }
+      const userId = userData.user.id;
+
       const file = event.target.files[0];
       const fileExt = file.name.split(".").pop();
-      const filePath = `${Math.random()}.${fileExt}`;
+      const filePath = `${userId}/${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -37,10 +43,24 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
       }
       
       const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      // Clean up old avatar
+      if (url) {
+        const parts = url.split("/avatars/");
+        if (parts.length > 1) {
+          const oldFilePath = parts[1];
+          await supabase.storage.from("avatars").remove([oldFilePath]);
+        }
+      }
+
       onUpload(data.publicUrl);
       
-    } catch (error: any) {
-      toast.error(error.message || "Error uploading avatar!");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Error uploading avatar!");
+      } else {
+        toast.error("Error uploading avatar!");
+      }
     } finally {
       setUploading(false);
     }
