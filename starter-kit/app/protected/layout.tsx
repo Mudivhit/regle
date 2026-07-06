@@ -1,7 +1,7 @@
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar, MobileNav } from "@/components/app-sidebar";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -17,6 +17,7 @@ export default function ProtectedLayout({
       <nav className="w-full flex justify-center border-b border-border/40 bg-background/80 backdrop-blur-lg sticky top-0 z-50">
         <div className="w-full max-w-7xl flex justify-between items-center h-14 px-5">
           <div className="flex gap-5 items-center">
+            <MobileNav />
             <Link
               href="/"
               className="text-sm font-bold tracking-tight text-foreground transition-colors hover:text-primary"
