@@ -44,15 +44,6 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
       
       const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-      // Clean up old avatar
-      if (url) {
-        const parts = url.split("/avatars/");
-        if (parts.length > 1) {
-          const oldFilePath = parts[1];
-          await supabase.storage.from("avatars").remove([oldFilePath]);
-        }
-      }
-
       onUpload(data.publicUrl);
       
     } catch (error: unknown) {
@@ -79,7 +70,6 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
       <div className="flex flex-col gap-2">
         <input
           type="file"
-          id="single"
           accept="image/*"
           onChange={uploadAvatar}
           disabled={uploading}
