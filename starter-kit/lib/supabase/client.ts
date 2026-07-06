@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { Database } from "@/types/supabase";
 
 export function createClient() {
   let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -12,7 +13,7 @@ export function createClient() {
     supabaseUrl = `https://${window.location.hostname.replace(/\-\d+\./, `-${port}.`)}`;
   }
 
-  return createBrowserClient(
+  return createBrowserClient<Database>(
     supabaseUrl,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
   );
