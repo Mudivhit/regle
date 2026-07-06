@@ -16,6 +16,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Mail, Lock, UserPlus, ArrowRight, Loader2 } from "lucide-react";
+import { z } from "zod";
+
+const signUpSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  repeatPassword: z.string(),
+}).refine((data) => data.password === data.repeatPassword, {
+  message: "Passwords do not match",
+  path: ["repeatPassword"],
+});
 
 export function SignUpForm({
   className,
@@ -25,25 +35,33 @@ export function SignUpForm({
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{email?: string, password?: string, repeatPassword?: string}>({});
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
+    setValidationErrors({});
 
-    if (password !== repeatPassword) {
-      setError("Passwords do not match");
+    const result = signUpSchema.safeParse({ email, password, repeatPassword });
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setValidationErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+        repeatPassword: fieldErrors.repeatPassword?.[0],
+      });
       setIsLoading(false);
       return;
     }
 
+    const supabase = createClient();
     try {
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: result.data.email,
+        password: result.data.password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
         },
@@ -88,6 +106,9 @@ export function SignUpForm({
                     className="pl-10"
                   />
                 </div>
+                {validationErrors.email && (
+                  <p className="text-xs text-destructive">{validationErrors.email}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -104,6 +125,9 @@ export function SignUpForm({
                     className="pl-10"
                   />
                 </div>
+                {validationErrors.password && (
+                  <p className="text-xs text-destructive">{validationErrors.password}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="repeat-password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -120,6 +144,9 @@ export function SignUpForm({
                     className="pl-10"
                   />
                 </div>
+                {validationErrors.repeatPassword && (
+                  <p className="text-xs text-destructive">{validationErrors.repeatPassword}</p>
+                )}
               </div>
               {error && (
                 <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive animate-fade-in">
