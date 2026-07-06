@@ -16,6 +16,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export function LoginForm({
   className,
@@ -25,18 +31,32 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{email?: string, password?: string}>({});
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
+    setValidationErrors({});
+
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setValidationErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const supabase = createClient();
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: result.data.email,
+        password: result.data.password,
       });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
@@ -79,6 +99,7 @@ export function LoginForm({
                     className="pl-10"
                   />
                 </div>
+                {validationErrors.email && <p className="text-xs text-destructive">{validationErrors.email}</p>}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
@@ -103,6 +124,7 @@ export function LoginForm({
                     className="pl-10"
                   />
                 </div>
+                {validationErrors.password && <p className="text-xs text-destructive">{validationErrors.password}</p>}
               </div>
               {error && (
                 <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive animate-fade-in">
