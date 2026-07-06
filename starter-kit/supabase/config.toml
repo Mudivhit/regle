@@ -34,7 +34,7 @@ enabled = true
 sql_paths = ["./seed.sql"]
 
 [realtime]
-enabled = true
+enabled = false
 
 [studio]
 enabled = true
@@ -57,12 +57,12 @@ enabled = true
 enabled = false
 
 [storage.vector]
-enabled = true
+enabled = false
 
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = ["https://127.0.0.1:3000", "https://*.app.github.dev", "http://localhost:3000"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
@@ -122,6 +122,4 @@ inspector_port = 8083
 deno_version = 2
 
 [analytics]
-enabled = true
-port = 54327
-backend = "postgres"
+enabled = false
