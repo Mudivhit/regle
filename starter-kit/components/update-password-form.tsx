@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Lock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 
 export function UpdatePasswordForm({
   className,
@@ -43,31 +44,54 @@ export function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
-            Please enter your new password below.
+    <div className={cn("flex flex-col gap-6 animate-slide-up", className)} {...props}>
+      <Card className="glass glow border-white/10 dark:border-white/[0.06]">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Set new password</CardTitle>
+          <CardDescription className="text-muted-foreground/80">
+            Choose a strong password for your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <form onSubmit={handleForgotPassword}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
               <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="New password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <Label htmlFor="password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  New Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter new password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
+              {error && (
+                <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive animate-fade-in">
+                  {error}
+                </div>
+              )}
+              <Button type="submit" className="w-full gap-2" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Updating…
+                  </>
+                ) : (
+                  <>
+                    Update password
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
             </div>
           </form>
