@@ -19,6 +19,8 @@ import { Mail, Lock, UserPlus, ArrowRight, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 const signUpSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   repeatPassword: z.string(),
@@ -31,11 +33,13 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<{email?: string, password?: string, repeatPassword?: string}>({});
+  const [validationErrors, setValidationErrors] = useState<{firstName?: string, lastName?: string, email?: string, password?: string, repeatPassword?: string}>({});
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -45,10 +49,12 @@ export function SignUpForm({
     setError(null);
     setValidationErrors({});
 
-    const result = signUpSchema.safeParse({ email, password, repeatPassword });
+    const result = signUpSchema.safeParse({ firstName, lastName, email, password, repeatPassword });
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
       setValidationErrors({
+        firstName: fieldErrors.firstName?.[0],
+        lastName: fieldErrors.lastName?.[0],
         email: fieldErrors.email?.[0],
         password: fieldErrors.password?.[0],
         repeatPassword: fieldErrors.repeatPassword?.[0],
@@ -63,6 +69,10 @@ export function SignUpForm({
         email: result.data.email,
         password: result.data.password,
         options: {
+          data: {
+            first_name: result.data.firstName,
+            last_name: result.data.lastName,
+          },
           emailRedirectTo: `${window.location.origin}/protected`,
         },
       });
@@ -90,6 +100,48 @@ export function SignUpForm({
         <CardContent className="pt-4">
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="firstName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    First Name
+                  </Label>
+                  <div className="relative">
+                    <UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="Jane"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  {validationErrors.firstName && (
+                    <p className="text-xs text-destructive">{validationErrors.firstName}</p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="lastName" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Last Name
+                  </Label>
+                  <div className="relative">
+                    <UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
+                    <Input
+                      id="lastName"
+                      type="text"
+                      placeholder="Doe"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  {validationErrors.lastName && (
+                    <p className="text-xs text-destructive">{validationErrors.lastName}</p>
+                  )}
+                </div>
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Email
