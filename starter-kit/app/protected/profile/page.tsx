@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 async function ProfileContent() {
   const supabase = await createClient();
@@ -21,8 +22,20 @@ async function ProfileContent() {
     .select("*")
     .eq("id", user.id)
     .single();
+    
+  const role = user.app_metadata?.role || "user";
 
-  return <ProfileForm initialProfile={profile} />;
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium text-muted-foreground">Account Role:</span>
+        <Badge variant={role === "admin" ? "default" : "secondary"} className="capitalize">
+          {role}
+        </Badge>
+      </div>
+      <ProfileForm initialProfile={profile} />
+    </div>
+  );
 }
 
 export default function ProfilePage() {

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { profileSchema } from "@/lib/validations/profile";
 
-export async function updateProfile(data: { full_name: string; avatar_url: string | null }) {
+export async function updateProfile(data: z.infer<typeof profileSchema>) {
   const parsed = profileSchema.safeParse(data);
   if (!parsed.success) {
     const errorMessage = parsed.error.issues[0]?.message || "Invalid data provided";
@@ -24,7 +24,10 @@ export async function updateProfile(data: { full_name: string; avatar_url: strin
     .from("profiles")
     .upsert({
       id: userData.user.id,
-      full_name: parsed.data.full_name,
+      first_name: parsed.data.first_name,
+      last_name: parsed.data.last_name,
+      mobile_number: parsed.data.mobile_number,
+      bio: parsed.data.bio,
       avatar_url: parsed.data.avatar_url,
       updated_at: new Date().toISOString(),
     });

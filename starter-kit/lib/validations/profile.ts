@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export const profileSchema = z.object({
-  full_name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
-  avatar_url: z.string().nullable().optional(),
+  first_name: z.string().min(2, "First name must be at least 2 characters").max(50),
+  last_name: z.string().min(2, "Last name must be at least 2 characters").max(50),
+  mobile_number: z.string().optional(),
+  bio: z.string().max(500, "Bio cannot exceed 500 characters").optional(),
+  avatar_url: z.string().url().nullable().optional(),
 });
