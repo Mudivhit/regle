@@ -30,3 +30,21 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_user_role_updated
   AFTER INSERT OR UPDATE ON public.user_roles
   FOR EACH ROW EXECUTE PROCEDURE public.sync_role_to_app_metadata();
+
+-- Auto-create role for new users
+CREATE OR REPLACE FUNCTION public.handle_new_user_role()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.user_roles (user_id, role) VALUES (NEW.id, 'user');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created_role
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user_role();
+
+-- Insert role for existing users
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'user' FROM auth.users
+ON CONFLICT DO NOTHING;
