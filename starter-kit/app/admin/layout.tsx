@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProtectedLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export default async function ProtectedLayout({
               href="/"
               className="text-sm font-bold tracking-tight text-foreground transition-colors hover:text-primary"
             >
-              Regle
+              Regle Admin
             </Link>
           </div>
           <div className="flex items-center gap-3">
