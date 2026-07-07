@@ -23,23 +23,26 @@ export default async function ProtectedPage() {
     return redirect("/auth/login");
   }
 
-  // Fetch profile to get first name
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  // Fetch profile and recent activity concurrently
+  const [
+    { data: profile },
+    { data: activity }
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("user_activity")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5)
+  ]);
 
   // Log this dashboard visit (non-blocking)
   logActivity("Viewed Dashboard");
-
-  // Fetch recent activity
-  const { data: activity } = await supabase
-    .from("user_activity")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(5);
 
   const role = user.app_metadata?.role || "user";
   const firstName = profile?.first_name || "there";
