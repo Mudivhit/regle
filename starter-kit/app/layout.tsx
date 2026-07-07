@@ -10,8 +10,28 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Regle",
-  description: "Build robust, scalable applications with a modern stack",
+  title: {
+    default: "Regle - Modern SaaS Starter",
+    template: "%s | Regle",
+  },
+  description: "Build robust, scalable applications with a modern stack featuring Next.js, Supabase, and Tailwind CSS.",
+  openGraph: {
+    title: "Regle - Modern SaaS Starter",
+    description: "Build robust, scalable applications with a modern stack featuring Next.js, Supabase, and Tailwind CSS.",
+    url: defaultUrl,
+    siteName: "Regle",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Regle - Modern SaaS Starter",
+    description: "Build robust, scalable applications with a modern stack.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const geistSans = Geist({
