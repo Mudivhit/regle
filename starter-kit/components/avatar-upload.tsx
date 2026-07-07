@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -65,8 +66,7 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
     <div className="flex items-center gap-4">
       <div className="relative h-20 w-20 overflow-hidden rounded-full bg-muted flex items-center justify-center border">
         {url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={url} alt="Avatar" className="h-full w-full object-cover" />
+          <Image src={url} alt="Avatar" fill className="object-cover" />
         ) : (
           <User className="h-10 w-10 text-muted-foreground" />
         )}
