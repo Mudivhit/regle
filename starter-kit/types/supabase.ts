@@ -55,6 +55,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          marketing_emails: boolean | null
+          security_emails: boolean | null
+          user_id: string
+        }
+        Insert: {
+          marketing_emails?: boolean | null
+          security_emails?: boolean | null
+          user_id: string
+        }
+        Update: {
+          marketing_emails?: boolean | null
+          security_emails?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
