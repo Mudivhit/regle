@@ -3,18 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Settings, User, Menu } from "lucide-react";
+import { LayoutDashboard, Settings, User, Menu, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 
-const navigation = [
+const baseNavigation = [
   { name: "Dashboard", href: "/protected", icon: LayoutDashboard },
   { name: "Profile", href: "/protected/profile", icon: User },
   { name: "Settings", href: "/protected/settings", icon: Settings },
 ];
 
-function NavItems({ isMobile }: { isMobile?: boolean }) {
+function NavItems({ isMobile, isAdmin }: { isMobile?: boolean; isAdmin?: boolean }) {
   const pathname = usePathname();
+  
+  const navigation = [...baseNavigation];
+  if (isAdmin) {
+    navigation.push({ name: "Admin Panel", href: "/admin", icon: ShieldAlert });
+  }
 
   return (
     <>
@@ -63,19 +68,19 @@ function NavItems({ isMobile }: { isMobile?: boolean }) {
   );
 }
 
-export function AppSidebar() {
+export function AppSidebar({ isAdmin }: { isAdmin?: boolean }) {
   return (
     <div className="flex w-64 flex-col border-r border-border/40 bg-background/50 backdrop-blur-md hidden md:flex sticky top-14 h-[calc(100vh-3.5rem)]">
       <div className="flex-1 overflow-y-auto py-6 px-4">
         <nav className="flex-1 space-y-1">
-          <NavItems />
+          <NavItems isAdmin={isAdmin} />
         </nav>
       </div>
     </div>
   );
 }
 
-export function MobileNav() {
+export function MobileNav({ isAdmin }: { isAdmin?: boolean }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -87,7 +92,7 @@ export function MobileNav() {
       <SheetContent side="left" className="w-64 pt-10">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="flex flex-col space-y-1">
-          <NavItems isMobile />
+          <NavItems isMobile isAdmin={isAdmin} />
         </nav>
       </SheetContent>
     </Sheet>
